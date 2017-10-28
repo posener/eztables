@@ -17,6 +17,7 @@ type Chain struct {
 // Table is a list of chains
 type Table []*Chain
 
+// Load loads a table from the iptables command
 func Load(chain string) (*Table, error) {
 	args := []string{"-v", "-S"}
 	if chain != "" {

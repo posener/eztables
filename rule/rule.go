@@ -51,12 +51,14 @@ type Count struct {
 	Bytes Bytes
 }
 
+// Bytes represents a number in byte units
 type Bytes uint64
 
 func (b Bytes) String() string {
 	return humanize.Bytes(uint64(b))
 }
 
+// Packets represents a number in number of packets
 type Packets uint64
 
 func (p Packets) String() string {

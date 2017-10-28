@@ -7,6 +7,7 @@ import (
 	"github.com/posener/eztables/table"
 )
 
+// Write writes a Table struct to an html page
 func Write(w io.Writer, t *table.Table) error {
 	return tmplt.Execute(w, t)
 }
