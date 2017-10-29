@@ -15,22 +15,26 @@ func Write(w io.Writer, t *table.Table) error {
 var tmplt = template.Must(template.New("table").Parse(`
 <!doctype html>
 <html lang="en">
-<head>
-<title>eztables</title>
-<meta charset="utf-8">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-</head>
-<body>
-<div class="container">
-	<div class="row">
-		<div class="col">
-			<h1><a href="/">eztables</a></h1>
-		</div>
-	</div>
 
+<head>
+	<title>eztables</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+</head>
+
+<body>
+
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+	<a class="navbar-brand" href="/">eztables</a>
+	<span class="navbar-text">
+		<a href="https://github.com/posener/eztables">about</a>
+	</span>
+</nav>
+
+<div class="container">
+	<ul class="nav">
 	{{range $_, $chain := .}}
-	<div class="row">
-		<div class="col">
+		<li class="nav-item">
 			<h2>Chain <a href="/chains/{{$chain.Name}}">{{$chain.Name}}</a></h2>
 			<table class="table table-hover">
 				<tr>
@@ -54,10 +58,9 @@ var tmplt = template.Must(template.New("table").Parse(`
 				</tr>
 				{{end}}
 			</table>
-		</div>
-	</div>
+		</li>
 	{{end}}
-
+	</ul>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
