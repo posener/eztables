@@ -7,9 +7,14 @@ import (
 	"github.com/posener/eztables/table"
 )
 
+type data struct {
+	Table  table.Table
+	Others []string
+}
+
 // Write writes a Table struct to an html page
-func Write(w io.Writer, t *table.Table) error {
-	return tmplt.Execute(w, t)
+func Write(w io.Writer, t table.Table, tables []string) error {
+	return tmplt.Execute(w, data{Table: t, Others: tables})
 }
 
 var tmplt = template.Must(template.New("table").Parse(`
@@ -24,23 +29,38 @@ var tmplt = template.Must(template.New("table").Parse(`
 
 <body>
 
-<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
-	<a class="navbar-brand" href="/">eztables</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="/">eztables</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Table: {{.Table.Name}}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+		{{range $i, $name := .Others}}
+          <a class="dropdown-item" href="/tables/{{$name}}">{{$name}}</a>
+		{{end}}
+        </div>
+      </li>
+    </ul>
 	<span class="navbar-text">
 		<a href="https://github.com/posener/eztables">about</a>
 	</span>
+  </div>
 </nav>
-
-
 
 <div class="container">
 
 	<div class="row">
 
 		<div class="col-3">
-			<h2>Chains</h2>
 			<ul class="nav flex-column nav-pills" id="chainTabs" role="tablist">
-			{{range $i, $chain := .}}
+			{{range $i, $chain := .Table.Chains}}
 				<li class="nav-item">
 					<a class="nav-link{{if eq $i 0}} active{{end}}"
 						id="{{$chain.Name}}-tab"
@@ -60,7 +80,7 @@ var tmplt = template.Must(template.New("table").Parse(`
 
 		<div class="col-9">
 			<div class="tab-content">
-			{{range $i, $chain := .}}
+			{{range $i, $chain := .Table.Chains}}
 
 				<div class="tab-pane fade{{if eq $i 0}} show active{{end}}"
 					id="{{$chain.Name}}"
@@ -71,19 +91,30 @@ var tmplt = template.Must(template.New("table").Parse(`
 						<tr>
 							<th>match</th>
 							<th>target</th>
-							<th>target args</th>
 							<th>packets</th>
 							<th>bytes</th>
 						</tr>
 						{{range $chain.Rules}}
 						<tr class="{{if .Positive}}table-success{{else if .Negative}}table-danger{{end}}">
-							<td>{{.Match}}</td>
+							<td>
+								{{if .Match}}
+									{{range $_, $arg := .Match}}
+										{{$arg}}
+									{{end}}
+								{{end}}
+							</td>
 							{{if or .Positive .Negative}}
-							<td>{{.Target}}</td>
+							<td>
+								{{.Target}}
+								{{if .TargetArgs}}
+									{{range $_, $arg := .TargetArgs}}
+										{{$arg}}
+									{{end}}
+								{{end}}
+							</td>
 							{{else}}
 							<td><a href="#{{.Target}}">{{.Target}}</a></td>
 							{{end}}
-							<td>{{.TargetArgs}}</td>
 							<td>{{.Count.Packets}}</td>
 							<td>{{.Count.Bytes}}</td>
 						</tr>

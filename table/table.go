@@ -15,15 +15,14 @@ type Chain struct {
 }
 
 // Table is a list of chains
-type Table []*Chain
+type Table struct {
+	Name   string
+	Chains []*Chain
+}
 
-// Load loads a table from the iptables command
-func Load(chain string) (*Table, error) {
-	args := []string{"-v", "-S"}
-	if chain != "" {
-		args = append(args, chain)
-	}
-	cmd := exec.Command("iptables", args...)
+// Load loads defined tables from the iptables command
+func Load() ([]Table, error) {
+	cmd := exec.Command("iptables-save", "-c")
 	r, err := cmd.StdoutPipe()
 	if err != nil {
 		return nil, err
@@ -35,29 +34,31 @@ func Load(chain string) (*Table, error) {
 	}
 
 	s := bufio.NewScanner(r)
-	t := Table{}
+	t := []Table{}
 	for s.Scan() {
 		line := s.Text()
-		if len(line) < 2 || line[0] != '-' {
+		if len(line) == 0 {
 			continue
 		}
-		switch line[1] {
-		case 'A':
+		switch line[0] {
+		case '*':
+			t = append(t, Table{Name: line[1:]})
+		case '[':
 			r, err := rule.Parse(line)
 			if err != nil {
-				log.Printf("failed parsing A line: %s", err)
+				log.Printf("Failed parsing line %s: %s", line, err)
 				continue
 			}
-			t.addRule(*r)
+			t[len(t)-1].addRule(*r)
 		}
 	}
-	return &t, nil
+	return t, nil
 }
 
 func (t *Table) addRule(r rule.Rule) {
-	if len(*t) == 0 || (*t)[len(*t)-1].Name != r.Chain {
-		*t = append(*t, &Chain{Name: r.Chain})
+	if len(t.Chains) == 0 || t.Chains[len(t.Chains)-1].Name != r.Chain {
+		t.Chains = append(t.Chains, &Chain{Name: r.Chain})
 	}
-	ch := (*t)[len(*t)-1]
+	ch := t.Chains[len(t.Chains)-1]
 	ch.Rules = append(ch.Rules, r)
 }

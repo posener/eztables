@@ -13,40 +13,35 @@ func TestALine(t *testing.T) {
 		r    *Rule
 	}{
 		{
-			line: "-A FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -c 12 244 -j ACCEPT",
+			line: "[12:244] -A FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT",
 			r: &Rule{
 				Chain: "FORWARD",
-				Match: "-o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED",
+				Match: []Arg{{Key: "-o", Value: []string{"br-4fbab684f8fb"}}, {Key: "-m", Value: []string{"conntrack"}}, {Key: "--ctstate", Value: []string{"RELATED,ESTABLISHED"}}},
 				Jump:  "ACCEPT",
 				Count: Count{Packets: 12, Bytes: 244},
 			},
 		},
 		{
-			line: "-A FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -c 12 244 -g ACCEPT",
+			line: "[12:244] -A FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -g ACCEPT",
 			r: &Rule{
 				Chain: "FORWARD",
-				Match: "-o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED",
+				Match: []Arg{{Key: "-o", Value: []string{"br-4fbab684f8fb"}}, {Key: "-m", Value: []string{"conntrack"}}, {Key: "--ctstate", Value: []string{"RELATED,ESTABLISHED"}}},
 				GoTo:  "ACCEPT",
 				Count: Count{Packets: 12, Bytes: 244},
 			},
 		},
 		{
-			line: "-A FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -c 12 -j ACCEPT",
-			r: &Rule{
-				Chain: "FORWARD",
-				Match: "-o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -c 12",
-				Jump:  "ACCEPT",
-			},
+			line: "[12:] -A FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT",
 		},
 		{
-			line: "-A FORWARD -j ACCEPT",
+			line: "[0:0] -A FORWARD -j ACCEPT",
 			r: &Rule{
 				Chain: "FORWARD",
 				Jump:  "ACCEPT",
 			},
 		},
 		{
-			line: "-A FORWARD -c 1 2 -j ACCEPT",
+			line: "[1:2] -A FORWARD -j ACCEPT",
 			r: &Rule{
 				Chain: "FORWARD",
 				Jump:  "ACCEPT",
@@ -54,40 +49,40 @@ func TestALine(t *testing.T) {
 			},
 		},
 		{
-			line: "-A FORWARD  -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED",
+			line: "[0:0] -A FORWARD  -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED",
 			r: &Rule{
 				Chain: "FORWARD",
-				Match: "-o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED",
+				Match: []Arg{{Key: "-o", Value: []string{"br-4fbab684f8fb"}}, {Key: "-m", Value: []string{"conntrack"}}, {Key: "--ctstate", Value: []string{"RELATED,ESTABLISHED"}}},
 			},
 		},
 		{
-			line: "-A FORWARD  -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -c 1 2",
+			line: "[1:2] -A FORWARD  -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED",
 			r: &Rule{
 				Chain: "FORWARD",
-				Match: "-o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED",
+				Match: []Arg{{Key: "-o", Value: []string{"br-4fbab684f8fb"}}, {Key: "-m", Value: []string{"conntrack"}}, {Key: "--ctstate", Value: []string{"RELATED,ESTABLISHED"}}},
 				Count: Count{Packets: 1, Bytes: 2},
 			},
 		},
 		{
-			line: "-A FORWARD -c 0 0 -j REJECT --reject-with icmp-host-prohibited",
+			line: "[0:0] -A FORWARD -j REJECT --reject-with icmp-host-prohibited",
 			r: &Rule{
 				Chain:      "FORWARD",
 				Jump:       "REJECT",
-				TargetArgs: "--reject-with icmp-host-prohibited",
+				TargetArgs: []Arg{{Key: "--reject-with", Value: []string{"icmp-host-prohibited"}}},
 			},
 		},
 		{
-			line: "-A FORWARD -i docker0 ! -o docker0 -c 15484 860607 -j ACCEPT",
+			line: "[15484:860607] -A FORWARD -i docker0 ! -o docker0 -j ACCEPT",
 			r: &Rule{
 				Chain: "FORWARD",
-				Match: "-i docker0 ! -o docker0",
+				Match: []Arg{{Key: "-i", Value: []string{"docker0"}}, {Key: "-o", Value: []string{"docker0"}, Not: true}},
 				Jump:  "ACCEPT",
 				Count: Count{Packets: 15484, Bytes: 860607},
 			},
 		},
-		{
-			line: "-B FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT",
-		},
+		{line: "[0:0] -B FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT"},
+		{line: "[0:0] -A FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -g"},
+		{line: "[0:0] -A FORWARD -o br-4fbab684f8fb -m conntrack --ctstate RELATED,ESTABLISHED -j"},
 	}
 
 	for _, tt := range tests {

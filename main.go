@@ -34,23 +34,31 @@ func main() {
 
 func handler() http.Handler {
 	m := mux.NewRouter()
-	m.Methods(http.MethodGet).Path("/chains/{chain}").HandlerFunc(chain)
+	m.Methods(http.MethodGet).Path("/tables/{table}").HandlerFunc(get)
 	m.Methods(http.MethodGet).Path("/").HandlerFunc(index)
 	return m
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	showTable(w, "")
+	http.Redirect(w, r, "/tables/filter", http.StatusFound)
 }
 
-func chain(w http.ResponseWriter, r *http.Request) {
-	showTable(w, mux.Vars(r)["chain"])
-}
-
-func showTable(w http.ResponseWriter, chain string) {
-	t, err := table.Load(chain)
+func get(w http.ResponseWriter, r *http.Request) {
+	tables, err := table.Load()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	html.Write(w, t)
+
+	tableName := mux.Vars(r)["table"]
+	var cur table.Table
+	names := make([]string, 0, len(tables)-1)
+
+	for _, t := range tables {
+		if t.Name == tableName {
+			cur = t
+		} else {
+			names = append(names, t.Name)
+		}
+	}
+	html.Write(w, cur, names)
 }
