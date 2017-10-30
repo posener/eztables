@@ -5,6 +5,10 @@
 [![GoDoc](https://godoc.org/github.com/posener/eztables?status.svg)](http://godoc.org/github.com/posener/eztables)
 [![Go Report Card](https://goreportcard.com/badge/github.com/posener/eztables)](https://goreportcard.com/report/github.com/posener/eztables)
 
+Easy to understand web view of iptables rules
+
+![screenshot](./screenshot.png "Screenshot")
+
 ## Install:
 
 ```bash
