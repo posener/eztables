@@ -6,6 +6,8 @@ import (
 	"os/exec"
 
 	"github.com/posener/eztables/rule"
+	"fmt"
+	"io/ioutil"
 )
 
 // Chain is a list of rules
@@ -27,8 +29,13 @@ func Load() ([]Table, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer r.Close()
+	errReader, err := cmd.StderrPipe()
+	if err != nil {
+		return nil, err
+	}
+	defer errReader.Close()
 	err = cmd.Start()
-	defer cmd.Wait()
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +59,18 @@ func Load() ([]Table, error) {
 			t[len(t)-1].addRule(*r)
 		}
 	}
+	cmd.Wait()
+	if !cmd.ProcessState.Success() {
+		errString, _ := ioutil.ReadAll(errReader)
+		return nil, fmt.Errorf("command iptables-save failed: %s", string(errString))
+	}
 	return t, nil
+}
+
+// Test tests if iptable command can be run
+func Test() error {
+	_, err := Load()
+	return err
 }
 
 func (t *Table) addRule(r rule.Rule) {

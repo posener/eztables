@@ -19,16 +19,21 @@ var (
 func main() {
 	flag.Parse()
 
+	err := table.Test()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	_, port, err := net.SplitHostPort(*addr)
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 	log.Printf("Listening on %s", *addr)
 	log.Printf("You can browse to http://localhost:%s", port)
 
 	err = http.ListenAndServe(*addr, handler())
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 }
 
@@ -47,6 +52,11 @@ func get(w http.ResponseWriter, r *http.Request) {
 	tables, err := table.Load()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if len(tables) == 0 {
+		http.Error(w, "Could not load tables", http.StatusNotFound)
+		return
 	}
 
 	tableName := mux.Vars(r)["table"]
