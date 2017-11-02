@@ -9,7 +9,15 @@ Easy to understand web view of iptables rules
 
 ![screenshot](./screenshot.png "Screenshot")
 
-## Install:
+## Run with Docker
+
+```bash
+docker run --rm --net host --privileged posener/eztables
+```
+
+> You should have docker installed, configured and running
+
+## Install
 
 ```bash
 go get -u github.com/posener/eztables
@@ -19,7 +27,7 @@ bash -c "sudo cp $(which eztables) /usr/bin/"
 > `eztables` must run with root privileges since it runs `iptables` as a sub process.
 > Therefore, I recommend copy the executable to `/usr/bin`.
 
-## Usage:
+## Usage
 
 ```bash
 sudo eztables
