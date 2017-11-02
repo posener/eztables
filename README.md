@@ -12,10 +12,21 @@ Easy to understand web view of iptables rules
 ## Run with Docker
 
 ```bash
-docker run --rm --net host --privileged posener/eztables
+docker run -d --restart always --name eztables --net host --privileged posener/eztables:v1.0
 ```
 
 > You should have docker installed, configured and running
+
+## Download Binary
+
+Binary releases are available [here](https://github.com/posener/eztables/releases).
+Copy the URL of a binary that suites your machine architecture and OS, and use
+the following commands to download and install it.
+
+```bash
+sudo curl <binray url> -o /usr/bin/eztables
+sudo chmod +x /usr/bin/eztables
+```
 
 ## Install
 
