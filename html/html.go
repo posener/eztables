@@ -88,19 +88,24 @@ var tmplt = template.Must(template.New("table").Parse(`
 					aria-labelledby="{{$chain.Name}}-tab">
 
 					<table class="table table-hover">
+						<thead>
 						<tr>
 							<th>match</th>
 							<th>target</th>
 							<th>packets</th>
 							<th>bytes</th>
 						</tr>
+						</thead>
+						<tbody>
 						{{range $chain.Rules}}
 						<tr class="{{if .Positive}}table-success{{else if .Negative}}table-danger{{end}}">
 							<td>
 								{{if .Match}}
+									<ul class="list-inline">
 									{{range $_, $arg := .Match}}
-										{{$arg}}
+										<li class="list-inline-item">{{$arg}}</li>
 									{{end}}
+									</ul>
 								{{end}}
 							</td>
 							{{if or .Positive .Negative}}
@@ -108,7 +113,7 @@ var tmplt = template.Must(template.New("table").Parse(`
 								{{.Target}}
 								{{if .TargetArgs}}
 									{{range $_, $arg := .TargetArgs}}
-										{{$arg}}
+										<li class="list-inline-item">{{$arg}}</li>
 									{{end}}
 								{{end}}
 							</td>
@@ -119,6 +124,7 @@ var tmplt = template.Must(template.New("table").Parse(`
 							<td>{{.Count.Bytes}}</td>
 						</tr>
 						{{end}}
+						</tbody>
 					</table>
 				</div>
 			{{end}}
