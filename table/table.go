@@ -5,9 +5,10 @@ import (
 	"log"
 	"os/exec"
 
-	"github.com/posener/eztables/rule"
 	"fmt"
 	"io/ioutil"
+
+	"github.com/posener/eztables/rule"
 )
 
 // Chain is a list of rules
