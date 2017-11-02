@@ -39,7 +39,7 @@ func (a Arg) String() string {
 	if a.Not {
 		not = "!"
 	}
-	return fmt.Sprintf("%s%s=%s", a.Key, not, strings.Join(a.Value, " "))
+	return fmt.Sprintf("%s%s=%s", strings.TrimLeft(a.Key, "-"), not, strings.Join(a.Value, " "))
 }
 
 // Count defines counters of a rule
