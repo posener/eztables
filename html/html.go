@@ -92,7 +92,9 @@ var tmplt = template.Must(template.New("table").Parse(`
 				<div class="tab-pane fade{{if eq $i 0}} show active{{end}}"
 					id="{{$chain.Name}}"
 					role="tabpanel"
-					aria-labelledby="{{$chain.Name}}-tab">
+					aria-labelledby="{{$chain.Name}}-tab"
+					style="overflow-y:scroll;height:90vh"
+					>
 
 					<table class="table table-hover">
 						<thead>
