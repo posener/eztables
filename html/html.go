@@ -9,11 +9,11 @@ import (
 
 type data struct {
 	Table  table.Table
-	Others []string
+	Others []table.Table
 }
 
 // Write writes a Table struct to an html page
-func Write(w io.Writer, t table.Table, tables []string) error {
+func Write(w io.Writer, t table.Table, tables []table.Table) error {
 	return tmplt.Execute(w, data{Table: t, Others: tables})
 }
 
@@ -37,13 +37,20 @@ var tmplt = template.Must(template.New("table").Parse(`
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Table: {{.Table.Name}}
+      <li class="nav-item dropdown" >
+        <a
+			class="nav-link dropdown-toggle"
+			href="#"
+			id="navbarDropdown"
+			role="button"
+			data-toggle="dropdown"
+			aria-haspopup="true"
+			aria-expanded="false">
+		Table: {{.Table.Name}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-		{{range $i, $name := .Others}}
-          <a class="dropdown-item" href="/tables/{{$name}}">{{$name}}</a>
+		{{range $_, $table := .Others}}
+          <a class="dropdown-item" href="/tables/{{$table.Name}}" {{$table.ToolTipAttributes}}>{{$table.Name}}</a>
 		{{end}}
         </div>
       </li>
@@ -103,7 +110,11 @@ var tmplt = template.Must(template.New("table").Parse(`
 								{{if .Match}}
 									<ul class="list-inline">
 									{{range $_, $arg := .Match}}
-										<li class="list-inline-item">{{$arg}}</li>
+										<li class="list-inline-item">
+											<span class="badge badge-info" {{$arg.ToolTipAttributes}}>
+												{{$arg}}
+											</span>
+										</li>
 									{{end}}
 									</ul>
 								{{end}}
@@ -112,8 +123,13 @@ var tmplt = template.Must(template.New("table").Parse(`
 							<td>
 								{{.Target}}
 								{{if .TargetArgs}}
+									<br>
 									{{range $_, $arg := .TargetArgs}}
-										<li class="list-inline-item">{{$arg}}</li>
+										<li class="list-inline-item">
+											<span class="badge badge-info" {{$arg.ToolTipAttributes}}>
+												{{$arg}}
+											</span>
+										</li>
 									{{end}}
 								{{end}}
 							</td>

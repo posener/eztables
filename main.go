@@ -61,14 +61,14 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 	tableName := mux.Vars(r)["table"]
 	var cur table.Table
-	names := make([]string, 0, len(tables)-1)
+	others := make([]table.Table, 0, len(tables)-1)
 
 	for _, t := range tables {
 		if t.Name == tableName {
 			cur = t
 		} else {
-			names = append(names, t.Name)
+			others = append(others, t)
 		}
 	}
-	html.Write(w, cur, names)
+	html.Write(w, cur, others)
 }

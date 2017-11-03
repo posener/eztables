@@ -2,11 +2,11 @@ package table
 
 import (
 	"bufio"
-	"log"
-	"os/exec"
-
 	"fmt"
 	"io/ioutil"
+	"log"
+	"os/exec"
+	"html/template"
 
 	"github.com/posener/eztables/rule"
 )
@@ -72,6 +72,15 @@ func Load() ([]Table, error) {
 func Test() error {
 	_, err := Load()
 	return err
+}
+
+// ToolTipAttributes return the table information in as tooltip html attributes
+func (t *Table) ToolTipAttributes() template.HTMLAttr {
+	tip := tooltip[t.Name]
+	if tip == "" {
+		return template.HTMLAttr("")
+	}
+	return template.HTMLAttr(fmt.Sprintf(`data-toggle="tooltip" data-placement="bottom" title="%s"`, tip))
 }
 
 func (t *Table) addRule(r rule.Rule) {

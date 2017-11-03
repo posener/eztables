@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"html/template"
 
 	"github.com/dustin/go-humanize"
 )
@@ -34,12 +35,26 @@ type Arg struct {
 	Not   bool
 }
 
+// KeyName is the argument key name
+func (a Arg) KeyName() string {
+	return strings.TrimLeft(a.Key, "-")
+}
+
 func (a Arg) String() string {
 	not := ""
 	if a.Not {
 		not = "!"
 	}
-	return fmt.Sprintf("%s%s=%s", strings.TrimLeft(a.Key, "-"), not, strings.Join(a.Value, " "))
+	return fmt.Sprintf("%s%s=%s", a.KeyName(), not, strings.Join(a.Value, " "))
+}
+
+// ToolTipAttributes are HTML attributes for tool tip
+func (a Arg) ToolTipAttributes() template.HTMLAttr {
+	t := tooltip[a.KeyName()]
+	if t == "" {
+		return template.HTMLAttr("")
+	}
+	return template.HTMLAttr(fmt.Sprintf(`data-toggle="tooltip" data-placement="bottom" title="%s"`, t))
 }
 
 // Count defines counters of a rule
