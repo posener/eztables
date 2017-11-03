@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/posener/eztables/html"
+	"github.com/posener/eztables/static"
 	"github.com/posener/eztables/table"
 )
 
@@ -41,6 +42,7 @@ func handler() http.Handler {
 	m := mux.NewRouter()
 	m.Methods(http.MethodGet).Path("/tables/{table}").HandlerFunc(get)
 	m.Methods(http.MethodGet).Path("/").HandlerFunc(index)
+	m.Methods(http.MethodGet).PathPrefix("/static/").Handler(static.Handler)
 	return m
 }
 
