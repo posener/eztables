@@ -119,9 +119,12 @@ var tmplt = template.Must(template.New("table").Parse(`
 									</ul>
 								{{end}}
 							</td>
-							{{if or .Positive .Negative}}
 							<td>
+								{{if or .TargetIsChain}}
+								<a href="#{{.Target}}">{{.Target}}</a>
+								{{else}}
 								{{.Target}}
+								{{end}}
 								{{if .TargetArgs}}
 									<br>
 									{{range $_, $arg := .TargetArgs}}
@@ -133,9 +136,6 @@ var tmplt = template.Must(template.New("table").Parse(`
 									{{end}}
 								{{end}}
 							</td>
-							{{else}}
-							<td><a href="#{{.Target}}">{{.Target}}</a></td>
-							{{end}}
 							<td>{{.Count.Packets}}</td>
 							<td>{{.Count.Bytes}}</td>
 						</tr>

@@ -3,10 +3,10 @@ package table
 import (
 	"bufio"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"os/exec"
-	"html/template"
 
 	"github.com/posener/eztables/rule"
 )

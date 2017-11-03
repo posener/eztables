@@ -2,10 +2,10 @@ package rule
 
 import (
 	"fmt"
+	"html/template"
 	"regexp"
 	"strconv"
 	"strings"
-	"html/template"
 
 	"github.com/dustin/go-humanize"
 )
@@ -186,5 +186,15 @@ func (r Rule) Positive() bool {
 // Negative is a rule that does not pass the packet
 func (r Rule) Negative() bool {
 	t := r.Target()
-	return t == "DROP" || t == "REJECT"
+	return t == "DROP" || t == "REJECT" || t == "RETURN"
+}
+
+// TargetIsChain return true if it is a link to a chain
+func (r Rule) TargetIsChain() bool {
+	switch r.Target() {
+	case "", "ACCEPT", "DROP", "REJECT", "RETURN", "MASQUERADE":
+		return false
+	default:
+		return true
+	}
 }
