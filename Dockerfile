@@ -8,4 +8,4 @@ RUN go build
 FROM alpine:3.7
 RUN apk add --no-cache iptables
 COPY --from=builder /go/src/github.com/posener/eztables/eztables /usr/bin/eztables
-entrypoint ["eztables"]
+ENTRYPOINT ["eztables"]
